@@ -1,11 +1,9 @@
 import React from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
-
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {RootStackParamList} from '@components';
-import {HomeBottomTabParamList} from 'src/components/Navigation/HomeBottomTabNavigation';
+import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {useAppSelector} from '@redux';
 
 export type AccountScreenNavigationProps = NativeStackNavigationProp<
