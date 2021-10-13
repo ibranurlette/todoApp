@@ -1,11 +1,10 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {AccountScreen, HomeScreen} from '@screens';
-import {HomeStackNavigation} from './HomeStackNavigation';
+import {TodoScreen, CreateTodoScreen} from '@screens';
 
 export type HomeBottomTabParamList = {
-  HomeStack: undefined;
-  Account: undefined;
+  CreateTodoStack: undefined;
+  Todo: undefined;
 };
 
 const HomeBottomTab = createBottomTabNavigator<HomeBottomTabParamList>();
@@ -14,14 +13,14 @@ export const HomeBottomTabNavigation = () => {
   return (
     <HomeBottomTab.Navigator>
       <HomeBottomTab.Screen
-        name="HomeStack"
-        component={HomeStackNavigation}
-        options={{headerShown: false}}
+        name="CreateTodoStack"
+        component={CreateTodoScreen}
+        options={{title: 'Buat Todo'}}
       />
       <HomeBottomTab.Screen
-        name="Account"
-        component={AccountScreen}
-        options={{headerShown: false}}
+        name="Todo"
+        component={TodoScreen}
+        options={{title: 'Daftar Todo'}}
       />
     </HomeBottomTab.Navigator>
   );

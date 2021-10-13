@@ -10,15 +10,15 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-import {HomeStackParamList, RootStackParamList} from '@navigation';
+import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {uiDimen} from '@constants';
 import {Space} from '@components';
 
-export type HomeScreenNavigationProp = NativeStackNavigationProp<
+export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'HomeBottomTab'
 > &
-  NativeStackNavigationProp<HomeStackParamList, 'Home'>;
+  NativeStackNavigationProp<HomeBottomTabParamList, 'CreateTodoStack'>;
 
 const listTodo = [
   {
@@ -43,32 +43,23 @@ const listTodo = [
   },
 ];
 
-export const HomeScreen = () => {
-  const navigation = useNavigation<HomeScreenNavigationProp>();
+export const CreateTodoScreen = () => {
+  const navigation = useNavigation<CreateTodoScreenNavigationProp>();
 
   return (
     <SafeAreaView>
       <View style={{margin: uiDimen.large}}>
-        <Text style={{fontSize: 16, color: 'black'}}>Masukkan todo anda</Text>
+        <Text style={styles.label}>Masukkan todo anda</Text>
         <Space height={uiDimen.medium} />
         <TextInput
           placeholder="Masukkan todo"
-          style={{
-            borderWidth: 1,
-            borderRadius: uiDimen.small,
-            paddingHorizontal: uiDimen.large,
-          }}
+          style={styles.input}
           onChangeText={() => {}}
           value="main bola"
         />
         <Space height={uiDimen.medium} />
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#1597E5',
-            padding: uiDimen.medium,
-            borderRadius: uiDimen.small,
-          }}>
-          <Text style={{color: 'white', textAlign: 'center'}}>Simpan</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.labelButton}>Simpan</Text>
         </TouchableOpacity>
         <Space height={uiDimen.large} />
         <Space height={uiDimen.large} />
@@ -102,6 +93,18 @@ export const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  label: {fontSize: 16, color: 'black'},
+  input: {
+    borderWidth: 1,
+    borderRadius: uiDimen.small,
+    paddingHorizontal: uiDimen.large,
+  },
+  button: {
+    backgroundColor: '#1597E5',
+    padding: uiDimen.medium,
+    borderRadius: uiDimen.small,
+  },
+  labelButton: {color: 'white', textAlign: 'center'},
   cardContainer: {
     borderWidth: 1,
     borderColor: '#1597E5',
