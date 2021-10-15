@@ -10,7 +10,6 @@ import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
 import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
-import {useAppSelector} from '@redux';
 import {Space} from '@components';
 import {uiDimen} from '@constants';
 
@@ -46,30 +45,33 @@ const listTodo = [
 export type listCardProps = {
   todo: any;
 };
+
 export const ListCard = ({todo}: listCardProps) => (
-  <View style={styles.cardContainer}>
-    <View style={styles.card}>
-      <View>
-        <Text style={{fontWeight: 'bold'}}>{todo.name}</Text>
-        <Text style={{fontWeight: '500'}}>{todo.date}</Text>
+  <TouchableOpacity>
+    <View style={styles.cardContainer}>
+      <View style={styles.card}>
+        <View>
+          <Text style={{fontWeight: 'bold'}}>{todo.name}</Text>
+          <Text style={{fontWeight: '500'}}>{todo.date}</Text>
+        </View>
+        <Text
+          style={[
+            styles.status,
+            {
+              backgroundColor:
+                todo.status === 'selesai' ? '#39A388' : '#1597E5',
+            },
+          ]}>
+          {todo.status}
+        </Text>
       </View>
-      <Text
-        style={[
-          styles.status,
-          {
-            backgroundColor: todo.status === 'selesai' ? '#39A388' : '#1597E5',
-          },
-        ]}>
-        {todo.status}
-      </Text>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 export const TodoScreen = () => {
   const navigation = useNavigation<TodoScreenNavigationProps>();
   const [activeTab, onChangeTab] = useState<number>(0);
-  const [status, onStatus] = useState<boolean>(false);
 
   return (
     <SafeAreaView>
@@ -78,24 +80,34 @@ export const TodoScreen = () => {
           <TouchableOpacity
             onPress={() => {
               onChangeTab(0);
-              onStatus(true);
             }}
             style={{
-              backgroundColor: '#1597E5',
+              backgroundColor: activeTab === 0 ? '#1597E5' : 'white',
               padding: uiDimen.small,
             }}>
-            <Text style={{fontWeight: 'bold', color: 'white'}}>Pending</Text>
+            <Text
+              style={{
+                fontWeight: activeTab === 0 ? 'bold' : 'normal',
+                color: activeTab === 0 ? 'white' : 'black',
+              }}>
+              Pending
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               onChangeTab(1);
-              onStatus(true);
             }}
             style={{
-              backgroundColor: '#1597E5',
+              backgroundColor: activeTab === 1 ? '#1597E5' : 'white',
               padding: uiDimen.small,
             }}>
-            <Text style={{fontWeight: 'bold', color: 'white'}}>Selesai</Text>
+            <Text
+              style={{
+                fontWeight: activeTab === 1 ? 'bold' : 'normal',
+                color: activeTab === 1 ? 'white' : 'black',
+              }}>
+              Selesai
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={{backgroundColor: '#1597E5', width: '100%', height: 5}} />
