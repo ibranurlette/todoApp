@@ -23,22 +23,22 @@ const listTodo = [
   {
     name: 'todo 1',
     date: '20/10/2020',
-    status: 'pending',
+    isDone: false,
   },
   {
     name: 'todo 2',
     date: '20/10/2020',
-    status: 'selesai',
+    isDone: true,
   },
   {
     name: 'todo 3',
     date: '20/10/2020',
-    status: 'pending',
+    isDone: false,
   },
   {
     name: 'todo 4',
     date: '20/10/2020',
-    status: 'selesai',
+    isDone: true,
   },
 ];
 
@@ -58,11 +58,10 @@ export const ListCard = ({todo}: listCardProps) => (
           style={[
             styles.status,
             {
-              backgroundColor:
-                todo.status === 'selesai' ? '#39A388' : '#1597E5',
+              backgroundColor: todo.isDone ? '#39A388' : '#1597E5',
             },
           ]}>
-          {todo.status}
+          {todo.isDone ? 'Selesai' : 'Pending'}
         </Text>
       </View>
     </View>
@@ -114,7 +113,7 @@ export const TodoScreen = () => {
 
         <Space height={uiDimen.large} />
         {listTodo.map((item, index) => {
-          if (activeTab === 0 && item.status === 'pending') {
+          if (activeTab === 0 && !item.isDone) {
             return (
               <View key={index}>
                 <ListCard todo={item} />
@@ -122,7 +121,7 @@ export const TodoScreen = () => {
               </View>
             );
           }
-          if (activeTab === 1 && item.status === 'selesai') {
+          if (activeTab === 1 && item.isDone) {
             return (
               <View key={index}>
                 <ListCard todo={item} />

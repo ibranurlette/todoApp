@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -20,31 +21,36 @@ export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
 > &
   NativeStackNavigationProp<HomeBottomTabParamList, 'CreateTodoStack'>;
 
-const listTodo = [
-  {
-    name: 'todo 1',
-    date: '20/10/2020',
-    status: 'pending',
-  },
-  {
-    name: 'todo 2',
-    date: '20/10/2020',
-    status: 'selesai',
-  },
-  {
-    name: 'todo 3',
-    date: '20/10/2020',
-    status: 'pending',
-  },
-  {
-    name: 'todo 4',
-    date: '20/10/2020',
-    status: 'selesai',
-  },
-];
-
 export const CreateTodoScreen = () => {
   const navigation = useNavigation<CreateTodoScreenNavigationProp>();
+  const [todos, setTodos] = React.useState<any[]>([]);
+  const [values, setValues] = React.useState<string>('');
+  const [error, setError] = React.useState<string>('');
+
+  const addTodo = (name: any) => {
+    if (name === '') {
+      setError('Todo tidak boleh kosong');
+    } else {
+      const newTodos = [
+        ...todos,
+        {name, date: new Date().toDateString(), isDone: false},
+      ];
+      setTodos(newTodos);
+      setError('');
+    }
+  };
+
+  const doneTodo = (index: number) => {
+    const newTodos = [...todos];
+    newTodos[index].isDone = true;
+    setTodos(newTodos);
+  };
+
+  const removeTodo = (index: number) => {
+    const newTodos = [...todos];
+    newTodos.splice(index, 1);
+    setTodos(newTodos);
+  };
 
   return (
     <SafeAreaView>
@@ -53,40 +59,94 @@ export const CreateTodoScreen = () => {
         <Space height={uiDimen.medium} />
         <TextInput
           placeholder="Masukkan todo"
+          value={values}
           style={styles.input}
-          onChangeText={() => {}}
-          value="main bola"
+          onChangeText={value => {
+            setValues(value);
+          }}
         />
         <Space height={uiDimen.medium} />
-        <TouchableOpacity style={styles.button}>
+        {error !== '' && (
+          <>
+            <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
+              {error}
+            </Text>
+            <Space height={uiDimen.medium} />
+          </>
+        )}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            addTodo(values);
+          }}>
           <Text style={styles.labelButton}>Simpan</Text>
         </TouchableOpacity>
         <Space height={uiDimen.large} />
         <Space height={uiDimen.large} />
 
-        {listTodo.map((item, index) => (
-          <View key={index}>
-            <View style={styles.cardContainer}>
-              <View style={styles.card}>
-                <View>
-                  <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
-                  <Text style={{fontWeight: '500'}}>{item.date}</Text>
-                </View>
-                <Text
-                  style={[
-                    styles.status,
-                    {
-                      backgroundColor:
-                        item.status === 'selesai' ? '#39A388' : '#1597E5',
-                    },
-                  ]}>
-                  {item.status}
-                </Text>
-              </View>
-            </View>
-            <Space height={uiDimen.medium} />
+        {todos.length === 0 ? (
+          <View>
+            <Text
+              style={{textAlign: 'center', fontSize: 15, fontWeight: 'bold'}}>
+              Belum Ada Todo
+            </Text>
           </View>
-        ))}
+        ) : (
+          <ScrollView>
+            {todos.map((item, index) => (
+              <View key={index}>
+                <View style={styles.cardContainer}>
+                  <View style={styles.card}>
+                    <View>
+                      <Text style={{fontWeight: 'bold', color: 'black'}}>
+                        {item.name}
+                      </Text>
+                      <Text style={{fontWeight: '500'}}>{item.date}</Text>
+                    </View>
+                    <Text
+                      style={[
+                        styles.status,
+                        {
+                          backgroundColor: item.isDone ? '#39A388' : '#1597E5',
+                        },
+                      ]}>
+                      {item.isDone ? 'Selesai' : 'Pending'}
+                    </Text>
+                  </View>
+                  <Space height={uiDimen.medium} />
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        removeTodo(index);
+                      }}>
+                      <Text
+                        style={[styles.actionButton, {backgroundColor: 'red'}]}>
+                        Delete
+                      </Text>
+                    </TouchableOpacity>
+                    <Space width={uiDimen.medium} />
+                    <TouchableOpacity
+                      onPress={() => {
+                        doneTodo(index);
+                      }}>
+                      <Text
+                        style={[
+                          styles.actionButton,
+                          {backgroundColor: '#39A388'},
+                        ]}>
+                        Done
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Space height={uiDimen.medium} />
+              </View>
+            ))}
+          </ScrollView>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -104,12 +164,26 @@ const styles = StyleSheet.create({
     padding: uiDimen.medium,
     borderRadius: uiDimen.small,
   },
-  labelButton: {color: 'white', textAlign: 'center'},
+  labelButton: {color: 'white', textAlign: 'center', fontWeight: 'bold'},
   cardContainer: {
     borderWidth: 1,
     borderColor: '#1597E5',
     padding: uiDimen.medium,
     borderRadius: uiDimen.small,
+  },
+  actionButton: {
+    color: 'white',
+    padding: uiDimen.small,
+    fontWeight: '500',
+    borderRadius: uiDimen.small,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4.84,
+    elevation: 5,
   },
   card: {
     flexDirection: 'row',
