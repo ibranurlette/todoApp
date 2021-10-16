@@ -14,6 +14,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {uiDimen} from '@constants';
 import {Space} from '@components';
+import {useAppDispatch, CreateTodoThunkArg, createTodoThunk} from '@redux';
 
 export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -22,22 +23,42 @@ export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
   NativeStackNavigationProp<HomeBottomTabParamList, 'CreateTodoStack'>;
 
 export const CreateTodoScreen = () => {
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<CreateTodoScreenNavigationProp>();
   const [todos, setTodos] = React.useState<any[]>([]);
-  const [values, setValues] = React.useState<string>('');
-  const [error, setError] = React.useState<string>('');
+  const [name, setName] = React.useState<string>('');
+  const [description, setDescription] = React.useState<string>('');
+  const [error, setError] = React.useState<any>();
 
-  const addTodo = (name: any) => {
-    if (name === '') {
-      setError('Todo tidak boleh kosong');
-    } else {
-      const newTodos = [
-        ...todos,
-        {name, date: new Date().toDateString(), isDone: false},
-      ];
-      setTodos(newTodos);
-      setError('');
+  const createTodo = async () => {
+    try {
+      const arg: CreateTodoThunkArg = {
+        data: {
+          name: name,
+          description: description,
+        },
+      };
+
+      const res = await dispatch(createTodoThunk(arg));
+
+      if (res.meta.requestStatus === 'rejected') {
+        setError(res.payload.errors);
+      }
+    } catch (error) {
+      console.log({error});
     }
+
+    // ! createa data just with react hooks
+    // if (name === '') {
+    //   setError('Todo tidak boleh kosong');
+    // } else {
+    //   const newTodos = [
+    //     ...todos,
+    //     {name, date: new Date().toDateString(), isDone: false},
+    //   ];
+    //   setTodos(newTodos);
+    //   setError('');
+    // }
   };
 
   const doneTodo = (index: number) => {
@@ -58,27 +79,42 @@ export const CreateTodoScreen = () => {
         <Text style={styles.label}>Masukkan todo anda</Text>
         <Space height={uiDimen.medium} />
         <TextInput
-          placeholder="Masukkan todo"
-          value={values}
+          placeholder="Masukkan nama todo"
+          value={name}
           style={styles.input}
           onChangeText={value => {
-            setValues(value);
+            setName(value);
           }}
         />
         <Space height={uiDimen.medium} />
-        {error !== '' && (
+        {error && (
           <>
             <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
-              {error}
+              {error.name}
             </Text>
             <Space height={uiDimen.medium} />
           </>
         )}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            addTodo(values);
-          }}>
+        <TextInput
+          placeholder="Masukkan deskripsi todo"
+          value={description}
+          style={styles.input}
+          multiline
+          numberOfLines={5}
+          onChangeText={value => {
+            setDescription(value);
+          }}
+        />
+        <Space height={uiDimen.medium} />
+        {error && (
+          <>
+            <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
+              {error.description}
+            </Text>
+            <Space height={uiDimen.medium} />
+          </>
+        )}
+        <TouchableOpacity style={styles.button} onPress={createTodo}>
           <Text style={styles.labelButton}>Simpan</Text>
         </TouchableOpacity>
         <Space height={uiDimen.large} />

@@ -12,6 +12,7 @@ module.exports = {
           '@redux': './src/Redux',
           '@navigation': './src/Navigation',
           '@constants': './src/Constants',
+          '@API': './src/API',
         },
       },
     ],
