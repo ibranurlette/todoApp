@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   View,
@@ -14,7 +14,14 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {uiDimen} from '@constants';
 import {Space} from '@components';
-import {useAppDispatch, CreateTodoThunkArg, createTodoThunk} from '@redux';
+import {
+  useAppDispatch,
+  CreateTodoThunkArg,
+  createTodoThunk,
+  fetchTodoThunk,
+  useAppSelector,
+  FetchTodoThunkArg,
+} from '@redux';
 
 export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -25,10 +32,10 @@ export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
 export const CreateTodoScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<CreateTodoScreenNavigationProp>();
+  const {errors, todo} = useAppSelector(state => state.todo);
   const [todos, setTodos] = React.useState<any[]>([]);
   const [name, setName] = React.useState<string>('');
   const [description, setDescription] = React.useState<string>('');
-  const [error, setError] = React.useState<any>();
 
   const createTodo = async () => {
     try {
@@ -39,11 +46,7 @@ export const CreateTodoScreen = () => {
         },
       };
 
-      const res = await dispatch(createTodoThunk(arg));
-
-      if (res.meta.requestStatus === 'rejected') {
-        setError(res.payload.errors);
-      }
+      await dispatch(createTodoThunk(arg));
     } catch (error) {
       console.log({error});
     }
@@ -60,6 +63,25 @@ export const CreateTodoScreen = () => {
     //   setError('');
     // }
   };
+  const fetchTodo = async () => {
+    try {
+      const arg: FetchTodoThunkArg = {
+        data: {
+          created_at: 'some_name',
+        },
+      };
+      const res = await dispatch(fetchTodoThunk(arg));
+      if (res.meta.requestStatus === 'fulfilled') {
+        setTodos(res.payload.data.data);
+      }
+    } catch (error) {
+      console.log({error});
+    }
+  };
+
+  useEffect(() => {
+    fetchTodo();
+  }, [todo]);
 
   const doneTodo = (index: number) => {
     const newTodos = [...todos];
@@ -75,61 +97,61 @@ export const CreateTodoScreen = () => {
 
   return (
     <SafeAreaView>
-      <View style={{margin: uiDimen.large}}>
-        <Text style={styles.label}>Masukkan todo anda</Text>
-        <Space height={uiDimen.medium} />
-        <TextInput
-          placeholder="Masukkan nama todo"
-          value={name}
-          style={styles.input}
-          onChangeText={value => {
-            setName(value);
-          }}
-        />
-        <Space height={uiDimen.medium} />
-        {error && (
-          <>
-            <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
-              {error.name}
-            </Text>
-            <Space height={uiDimen.medium} />
-          </>
-        )}
-        <TextInput
-          placeholder="Masukkan deskripsi todo"
-          value={description}
-          style={styles.input}
-          multiline
-          numberOfLines={5}
-          onChangeText={value => {
-            setDescription(value);
-          }}
-        />
-        <Space height={uiDimen.medium} />
-        {error && (
-          <>
-            <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
-              {error.description}
-            </Text>
-            <Space height={uiDimen.medium} />
-          </>
-        )}
-        <TouchableOpacity style={styles.button} onPress={createTodo}>
-          <Text style={styles.labelButton}>Simpan</Text>
-        </TouchableOpacity>
-        <Space height={uiDimen.large} />
-        <Space height={uiDimen.large} />
+      <ScrollView>
+        <View style={{margin: uiDimen.large}}>
+          <Text style={styles.label}>Masukkan todo anda</Text>
+          <Space height={uiDimen.medium} />
+          <TextInput
+            placeholder="Masukkan nama todo"
+            value={name}
+            style={styles.input}
+            onChangeText={value => {
+              setName(value);
+            }}
+          />
+          <Space height={uiDimen.medium} />
+          {errors && (
+            <>
+              <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
+                {errors.name}
+              </Text>
+              <Space height={uiDimen.medium} />
+            </>
+          )}
+          <TextInput
+            placeholder="Masukkan deskripsi todo"
+            value={description}
+            style={styles.input}
+            multiline
+            numberOfLines={5}
+            onChangeText={value => {
+              setDescription(value);
+            }}
+          />
+          <Space height={uiDimen.medium} />
+          {errors && (
+            <>
+              <Text style={{color: 'red', fontWeight: 'bold', fontSize: 15}}>
+                {errors.description}
+              </Text>
+              <Space height={uiDimen.medium} />
+            </>
+          )}
+          <TouchableOpacity style={styles.button} onPress={createTodo}>
+            <Text style={styles.labelButton}>Simpan</Text>
+          </TouchableOpacity>
+          <Space height={uiDimen.large} />
+          <Space height={uiDimen.large} />
 
-        {todos.length === 0 ? (
-          <View>
-            <Text
-              style={{textAlign: 'center', fontSize: 15, fontWeight: 'bold'}}>
-              Belum Ada Todo
-            </Text>
-          </View>
-        ) : (
-          <ScrollView>
-            {todos.map((item, index) => (
+          {todos.length === 0 ? (
+            <View>
+              <Text
+                style={{textAlign: 'center', fontSize: 15, fontWeight: 'bold'}}>
+                Belum Ada Todo
+              </Text>
+            </View>
+          ) : (
+            todos.map((item, index) => (
               <View key={index}>
                 <View style={styles.cardContainer}>
                   <View style={styles.card}>
@@ -137,7 +159,7 @@ export const CreateTodoScreen = () => {
                       <Text style={{fontWeight: 'bold', color: 'black'}}>
                         {item.name}
                       </Text>
-                      <Text style={{fontWeight: '500'}}>{item.date}</Text>
+                      <Text style={{fontWeight: '500'}}>{item.created_at}</Text>
                     </View>
                     <Text
                       style={[
@@ -180,10 +202,10 @@ export const CreateTodoScreen = () => {
                 </View>
                 <Space height={uiDimen.medium} />
               </View>
-            ))}
-          </ScrollView>
-        )}
-      </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -1,30 +1,29 @@
 import {ActionReducerMapBuilder} from '@reduxjs/toolkit';
 import {TodoInitialState} from '../InititalState';
-import {createTodoThunk} from '../Thunk';
+import {fetchTodoThunk} from '../Thunk';
 
-export const createTodoCases = (
+export const fetchTodoCases = (
   builder: ActionReducerMapBuilder<TodoInitialState>,
 ) => {
-  builder.addCase(createTodoThunk.pending, (state, _) => {
+  builder.addCase(fetchTodoThunk.pending, (state, _) => {
     state.isSubmitting = true;
     state.messageState = 'pending';
     state.message = 'Please wait';
     state.errors = null;
   });
 
-  builder.addCase(createTodoThunk.fulfilled, (state, action) => {
-    state.todo = action.payload.data;
+  builder.addCase(fetchTodoThunk.fulfilled, (state, action) => {
     state.isSubmitting = false;
     state.messageState = 'success';
-    state.message = 'Successfully Create Todo !';
+    state.message = 'Successfully get list todo !';
   });
 
-  builder.addCase(createTodoThunk.rejected, (state, action) => {
+  builder.addCase(fetchTodoThunk.rejected, (state, action) => {
     const {errors, message} = action.payload as any;
 
     state.isSubmitting = false;
     state.messageState = 'error';
     state.message = message;
-    state.errors = errors;
+    state.errors = errors.content;
   });
 };
