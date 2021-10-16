@@ -1,24 +1,24 @@
 import {ActionReducerMapBuilder} from '@reduxjs/toolkit';
 import {TodoInitialState} from '../InititalState';
-import {fetchTodoThunk} from '../Thunk';
+import {fetchDetailTodoThunk} from '../Thunk';
 
-export const fetchTodoCases = (
+export const fetchDetailTodoCases = (
   builder: ActionReducerMapBuilder<TodoInitialState>,
 ) => {
-  builder.addCase(fetchTodoThunk.pending, (state, _) => {
+  builder.addCase(fetchDetailTodoThunk.pending, (state, _) => {
     state.isFetching = true;
     state.messageState = 'pending';
     state.message = 'Please wait';
     state.errors = null;
   });
 
-  builder.addCase(fetchTodoThunk.fulfilled, (state, action) => {
+  builder.addCase(fetchDetailTodoThunk.fulfilled, (state, action) => {
     state.isFetching = false;
     state.messageState = 'success';
-    state.message = 'Successfully get list todo !';
+    state.message = 'Successfully get detail todo !';
   });
 
-  builder.addCase(fetchTodoThunk.rejected, (state, action) => {
+  builder.addCase(fetchDetailTodoThunk.rejected, (state, action) => {
     const {errors, message} = action.payload as any;
 
     state.isFetching = false;

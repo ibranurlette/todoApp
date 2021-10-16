@@ -17,10 +17,18 @@ export async function createTodoAPI(data: CreateTodoDataArgs) {
 
 export async function fetchTodoAPI() {
   try {
-    const response = await API.get('/todo?');
+    const response = await API.get('/todo');
     return response;
   } catch (err) {
-    console.log('err api', err);
+    throw err.response.data;
+  }
+}
+
+export async function fetchDetailTodoAPI(id: any) {
+  try {
+    const response = await API.get(`/todo/${id}`);
+    return response;
+  } catch (err) {
     throw err.response.data;
   }
 }

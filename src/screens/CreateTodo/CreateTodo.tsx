@@ -146,7 +146,11 @@ export const CreateTodoScreen = () => {
             </View>
           ) : (
             todos.map((item, index) => (
-              <View key={index}>
+              <TouchableOpacity
+                key={index}
+                onPress={() => {
+                  navigation.navigate('DetailTodo', {id: item.id});
+                }}>
                 <View style={styles.cardContainer}>
                   <View style={styles.card}>
                     <View>
@@ -195,7 +199,7 @@ export const CreateTodoScreen = () => {
                   </View>
                 </View>
                 <Space height={uiDimen.medium} />
-              </View>
+              </TouchableOpacity>
             ))
           )}
         </View>
