@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   SafeAreaView,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -12,35 +13,13 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {Space} from '@components';
 import {uiDimen} from '@constants';
+import {useAppDispatch, fetchTodoThunk, useAppSelector} from '@redux';
 
 export type TodoScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamList,
   'HomeBottomTab'
 > &
   NativeStackNavigationProp<HomeBottomTabParamList, 'Todo'>;
-
-const listTodo = [
-  {
-    name: 'todo 1',
-    date: '20/10/2020',
-    isDone: false,
-  },
-  {
-    name: 'todo 2',
-    date: '20/10/2020',
-    isDone: true,
-  },
-  {
-    name: 'todo 3',
-    date: '20/10/2020',
-    isDone: false,
-  },
-  {
-    name: 'todo 4',
-    date: '20/10/2020',
-    isDone: true,
-  },
-];
 
 export type listCardProps = {
   todo: any;
@@ -52,16 +31,16 @@ export const ListCard = ({todo}: listCardProps) => (
       <View style={styles.card}>
         <View>
           <Text style={{fontWeight: 'bold'}}>{todo.name}</Text>
-          <Text style={{fontWeight: '500'}}>{todo.date}</Text>
+          <Text style={{fontWeight: '500'}}>{todo.created_at}</Text>
         </View>
         <Text
           style={[
             styles.status,
             {
-              backgroundColor: todo.isDone ? '#39A388' : '#1597E5',
+              backgroundColor: todo.is_done ? '#39A388' : '#1597E5',
             },
           ]}>
-          {todo.isDone ? 'Selesai' : 'Pending'}
+          {todo.is_done ? 'Selesai' : 'Pending'}
         </Text>
       </View>
     </View>
@@ -69,8 +48,26 @@ export const ListCard = ({todo}: listCardProps) => (
 );
 
 export const TodoScreen = () => {
+  const dispatch = useAppDispatch();
   const navigation = useNavigation<TodoScreenNavigationProps>();
+  const {todo} = useAppSelector(state => state.todo);
   const [activeTab, onChangeTab] = useState<number>(0);
+  const [todos, setTodos] = React.useState<any[]>([]);
+
+  const fetchTodo = async () => {
+    try {
+      const res = await dispatch(fetchTodoThunk());
+      if (res.meta.requestStatus === 'fulfilled') {
+        setTodos(res.payload.data.data);
+      }
+    } catch (error) {
+      console.log({error});
+    }
+  };
+
+  useEffect(() => {
+    fetchTodo();
+  }, [todo]);
 
   return (
     <SafeAreaView>
@@ -112,24 +109,26 @@ export const TodoScreen = () => {
         <View style={{backgroundColor: '#1597E5', width: '100%', height: 5}} />
 
         <Space height={uiDimen.large} />
-        {listTodo.map((item, index) => {
-          if (activeTab === 0 && !item.isDone) {
-            return (
-              <View key={index}>
-                <ListCard todo={item} />
-                <Space height={uiDimen.medium} />
-              </View>
-            );
-          }
-          if (activeTab === 1 && item.isDone) {
-            return (
-              <View key={index}>
-                <ListCard todo={item} />
-                <Space height={uiDimen.medium} />
-              </View>
-            );
-          }
-        })}
+        <ScrollView>
+          {todos.map((item, index) => {
+            if (activeTab === 0 && !item.is_done) {
+              return (
+                <View key={index}>
+                  <ListCard todo={item} />
+                  <Space height={uiDimen.medium} />
+                </View>
+              );
+            }
+            if (activeTab === 1 && item.is_done) {
+              return (
+                <View key={index}>
+                  <ListCard todo={item} />
+                  <Space height={uiDimen.medium} />
+                </View>
+              );
+            }
+          })}
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

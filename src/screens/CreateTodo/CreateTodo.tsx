@@ -20,7 +20,6 @@ import {
   createTodoThunk,
   fetchTodoThunk,
   useAppSelector,
-  FetchTodoThunkArg,
 } from '@redux';
 
 export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
@@ -65,12 +64,7 @@ export const CreateTodoScreen = () => {
   };
   const fetchTodo = async () => {
     try {
-      const arg: FetchTodoThunkArg = {
-        data: {
-          created_at: 'some_name',
-        },
-      };
-      const res = await dispatch(fetchTodoThunk(arg));
+      const res = await dispatch(fetchTodoThunk());
       if (res.meta.requestStatus === 'fulfilled') {
         setTodos(res.payload.data.data);
       }
