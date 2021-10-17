@@ -32,3 +32,11 @@ export async function fetchDetailTodoAPI(id: any) {
     throw err.response.data;
   }
 }
+export async function removeTodoAPI(id: any) {
+  try {
+    const response = await API.delete(`/todo/${id}`);
+    return response;
+  } catch (err) {
+    throw err.response.data;
+  }
+}

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   View,
@@ -16,11 +16,13 @@ import {uiDimen} from '@constants';
 import {Space} from '@components';
 import {
   useAppDispatch,
+  useAppSelector,
   CreateTodoThunkArg,
   createTodoThunk,
   fetchTodoThunk,
-  useAppSelector,
+  removeTodoThunk,
 } from '@redux';
+import {ListTodo} from './Components';
 
 export type CreateTodoScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -32,9 +34,11 @@ export const CreateTodoScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<CreateTodoScreenNavigationProp>();
   const {errors, todo} = useAppSelector(state => state.todo);
-  const [todos, setTodos] = React.useState<any[]>([]);
-  const [name, setName] = React.useState<string>('');
-  const [description, setDescription] = React.useState<string>('');
+  const [todos, setTodos] = useState<any[]>([]);
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [todoId, setTodoId] = useState<string>('');
 
   const createTodo = async () => {
     try {
@@ -83,10 +87,19 @@ export const CreateTodoScreen = () => {
     setTodos(newTodos);
   };
 
-  const removeTodo = (index: number) => {
-    const newTodos = [...todos];
-    newTodos.splice(index, 1);
-    setTodos(newTodos);
+  const removeTodo = async (id: string) => {
+    try {
+      const res = await dispatch(removeTodoThunk(id));
+      if (res.meta.requestStatus === 'fulfilled') {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    // ! remove data just with react hooks
+    // const newTodos = [...todos];
+    // newTodos.splice(index, 1);
+    // setTodos(newTodos);
   };
 
   return (
@@ -137,71 +150,16 @@ export const CreateTodoScreen = () => {
           <Space height={uiDimen.large} />
           <Space height={uiDimen.large} />
 
-          {todos.length === 0 ? (
-            <View>
-              <Text
-                style={{textAlign: 'center', fontSize: 15, fontWeight: 'bold'}}>
-                Belum Ada Todo
-              </Text>
-            </View>
-          ) : (
-            todos.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  navigation.navigate('DetailTodo', {id: item.id});
-                }}>
-                <View style={styles.cardContainer}>
-                  <View style={styles.card}>
-                    <View>
-                      <Text style={{fontWeight: 'bold', color: 'black'}}>
-                        {item.name}
-                      </Text>
-                      <Text style={{fontWeight: '500'}}>{item.created_at}</Text>
-                    </View>
-                    <Text
-                      style={[
-                        styles.status,
-                        {
-                          backgroundColor: item.isDone ? '#39A388' : '#1597E5',
-                        },
-                      ]}>
-                      {item.isDone ? 'Selesai' : 'Pending'}
-                    </Text>
-                  </View>
-                  <Space height={uiDimen.medium} />
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                    }}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        removeTodo(index);
-                      }}>
-                      <Text
-                        style={[styles.actionButton, {backgroundColor: 'red'}]}>
-                        Delete
-                      </Text>
-                    </TouchableOpacity>
-                    <Space width={uiDimen.medium} />
-                    <TouchableOpacity
-                      onPress={() => {
-                        doneTodo(index);
-                      }}>
-                      <Text
-                        style={[
-                          styles.actionButton,
-                          {backgroundColor: '#39A388'},
-                        ]}>
-                        Done
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <Space height={uiDimen.medium} />
-              </TouchableOpacity>
-            ))
-          )}
+          <ListTodo
+            todos={todos}
+            doneTodo={doneTodo}
+            setTodoId={setTodoId}
+            todoId={todoId}
+            setModalVisible={setModalVisible}
+            modalVisible={modalVisible}
+            removeTodo={removeTodo}
+            navigate={navigation.navigate}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -221,34 +179,4 @@ const styles = StyleSheet.create({
     borderRadius: uiDimen.small,
   },
   labelButton: {color: 'white', textAlign: 'center', fontWeight: 'bold'},
-  cardContainer: {
-    borderWidth: 1,
-    borderColor: '#1597E5',
-    padding: uiDimen.medium,
-    borderRadius: uiDimen.small,
-  },
-  actionButton: {
-    color: 'white',
-    padding: uiDimen.small,
-    fontWeight: '500',
-    borderRadius: uiDimen.small,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4.84,
-    elevation: 5,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  status: {
-    color: 'white',
-    padding: uiDimen.small,
-    borderRadius: uiDimen.small,
-  },
 });
