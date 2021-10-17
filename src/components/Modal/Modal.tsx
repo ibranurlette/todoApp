@@ -7,7 +7,7 @@ export type ModalTodoProps = {
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   modalVisible: boolean;
   removeTodo: (id: string) => void;
-  doneTodo: (id: string) => void;
+  doneTodo?: (id: string) => void;
   todoId: string;
   actionStatus: string;
 };
@@ -40,7 +40,7 @@ export const ModalTodo = ({
                 onPress={() => {
                   actionStatus === 'delete'
                     ? removeTodo(todoId)
-                    : doneTodo(todoId);
+                    : doneTodo && doneTodo(todoId);
                 }}>
                 <Text style={styles.textStyle}>Yakin</Text>
               </TouchableOpacity>

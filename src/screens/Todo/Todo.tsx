@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   SafeAreaView,
-  StyleSheet,
   ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -13,7 +12,15 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RootStackParamList, HomeBottomTabParamList} from '@navigation';
 import {Space} from '@components';
 import {uiDimen} from '@constants';
-import {useAppDispatch, fetchTodoThunk, useAppSelector} from '@redux';
+import {
+  useAppDispatch,
+  fetchTodoThunk,
+  useAppSelector,
+  updateStatusTodoThunk,
+  removeTodoThunk,
+} from '@redux';
+
+import {ListCard} from './Components';
 
 export type TodoScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -21,38 +28,16 @@ export type TodoScreenNavigationProps = NativeStackNavigationProp<
 > &
   NativeStackNavigationProp<HomeBottomTabParamList, 'Todo'>;
 
-export type listCardProps = {
-  todo: any;
-};
-
-export const ListCard = ({todo}: listCardProps) => (
-  <TouchableOpacity>
-    <View style={styles.cardContainer}>
-      <View style={styles.card}>
-        <View>
-          <Text style={{fontWeight: 'bold'}}>{todo.name}</Text>
-          <Text style={{fontWeight: '500'}}>{todo.created_at}</Text>
-        </View>
-        <Text
-          style={[
-            styles.status,
-            {
-              backgroundColor: todo.is_done ? '#39A388' : '#1597E5',
-            },
-          ]}>
-          {todo.is_done ? 'Selesai' : 'Pending'}
-        </Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
 export const TodoScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<TodoScreenNavigationProps>();
   const {todo} = useAppSelector(state => state.todo);
   const [activeTab, onChangeTab] = useState<number>(0);
   const [todos, setTodos] = React.useState<any[]>([]);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [todoId, setTodoId] = useState<string>('');
+  const [actionStatus, setActionStatus] = useState<string>('');
 
   const fetchTodo = async () => {
     try {
@@ -68,6 +53,28 @@ export const TodoScreen = () => {
   useEffect(() => {
     fetchTodo();
   }, [todo]);
+
+  const doneTodo = async (id: string) => {
+    try {
+      const res = await dispatch(updateStatusTodoThunk(id));
+      if (res.meta.requestStatus === 'fulfilled') {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.log({error});
+    }
+  };
+
+  const removeTodo = async (id: string) => {
+    try {
+      const res = await dispatch(removeTodoThunk(id));
+      if (res.meta.requestStatus === 'fulfilled') {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -114,7 +121,18 @@ export const TodoScreen = () => {
             if (activeTab === 0 && !item.is_done) {
               return (
                 <View key={index}>
-                  <ListCard todo={item} />
+                  <ListCard
+                    todo={item}
+                    setModalVisible={setModalVisible}
+                    modalVisible={modalVisible}
+                    setTodoId={setTodoId}
+                    todoId={todoId}
+                    actionStatus={actionStatus}
+                    setActionStatus={setActionStatus}
+                    doneTodo={doneTodo}
+                    removeTodo={removeTodo}
+                    navigate={navigation.navigate}
+                  />
                   <Space height={uiDimen.medium} />
                 </View>
               );
@@ -122,7 +140,17 @@ export const TodoScreen = () => {
             if (activeTab === 1 && item.is_done) {
               return (
                 <View key={index}>
-                  <ListCard todo={item} />
+                  <ListCard
+                    todo={item}
+                    setModalVisible={setModalVisible}
+                    modalVisible={modalVisible}
+                    setTodoId={setTodoId}
+                    todoId={todoId}
+                    actionStatus={actionStatus}
+                    setActionStatus={setActionStatus}
+                    removeTodo={removeTodo}
+                    navigate={navigation.navigate}
+                  />
                   <Space height={uiDimen.medium} />
                 </View>
               );
@@ -133,22 +161,3 @@ export const TodoScreen = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    borderWidth: 1,
-    borderColor: '#1597E5',
-    padding: uiDimen.medium,
-    borderRadius: uiDimen.small,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  status: {
-    color: 'white',
-    padding: uiDimen.small,
-    borderRadius: uiDimen.small,
-  },
-});
