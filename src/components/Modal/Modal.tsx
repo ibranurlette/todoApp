@@ -36,7 +36,13 @@ export const ModalTodo = ({
             <View style={{padding: 20}}>
               <Text style={styles.modalText}>Apakah Kamu Yakin ?</Text>
               <TouchableOpacity
-                style={[styles.button, styles.buttonRemove]}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor:
+                      actionStatus === 'done' ? '#1597E5' : 'red',
+                  },
+                ]}
                 onPress={() => {
                   actionStatus === 'delete'
                     ? removeTodo(todoId)
@@ -46,7 +52,13 @@ export const ModalTodo = ({
               </TouchableOpacity>
               <Space height={uiDimen.medium} />
               <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
+                style={[
+                  styles.button,
+                  {
+                    backgroundColor:
+                      actionStatus === 'done' ? 'red' : '#1597E5',
+                  },
+                ]}
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>Tidak</Text>
               </TouchableOpacity>
@@ -83,12 +95,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  buttonClose: {
-    backgroundColor: '#1597E5',
-  },
-  buttonRemove: {
-    backgroundColor: 'red',
-  },
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
