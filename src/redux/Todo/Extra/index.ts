@@ -5,6 +5,7 @@ import {fetchTodoCases} from './FetchTodoCases';
 import {fetchDetailTodoCases} from './FetchDetailTodoCases';
 import {removeTodoCases} from './RemoveTodoCases';
 import {updateStatusTodoCases} from './UpdateStatusTodoCases';
+import {updateTodoCases} from './UpdateTodoCases';
 
 export const extraReducers = (
   builder: ActionReducerMapBuilder<TodoInitialState>,
@@ -14,4 +15,5 @@ export const extraReducers = (
   fetchDetailTodoCases(builder);
   removeTodoCases(builder);
   updateStatusTodoCases(builder);
+  updateTodoCases(builder);
 };

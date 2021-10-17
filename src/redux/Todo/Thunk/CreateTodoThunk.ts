@@ -1,8 +1,8 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {createTodoAPI, CreateTodoDataArgs} from '@API';
+import {createTodoAPI, TodoDataArgs} from '@API';
 
 export type CreateTodoThunkArg = {
-  data: CreateTodoDataArgs;
+  data: TodoDataArgs;
 };
 
 export const createTodoThunk = createAsyncThunk(

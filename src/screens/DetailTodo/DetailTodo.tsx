@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
+import {RootStackParamList} from '@navigation';
 import {useAppDispatch, fetchDetailTodoThunk, useAppSelector} from '@redux';
 import {Space} from '@components';
 import {uiDimen} from '@constants';
@@ -14,10 +17,15 @@ import {uiDimen} from '@constants';
 export type DetailTodoProps = {
   route: any;
 };
+
+export type DetailTodoScreenNavigationProp =
+  NativeStackNavigationProp<RootStackParamList>;
+
 export const DetailTodoScreen = ({route}: DetailTodoProps) => {
+  const navigation = useNavigation<DetailTodoScreenNavigationProp>();
   const dispatch = useAppDispatch();
   const {id} = route.params;
-  const {isFetching} = useAppSelector(state => state.todo);
+  const {isFetching, todo} = useAppSelector(state => state.todo);
 
   const [detail, setDetail] = useState<any>(null);
 
@@ -54,7 +62,7 @@ export const DetailTodoScreen = ({route}: DetailTodoProps) => {
 
   useEffect(() => {
     fetchTodo();
-  }, []);
+  }, [todo]);
 
   return isFetching ? (
     <View style={styles.isloading}>
@@ -72,7 +80,11 @@ export const DetailTodoScreen = ({route}: DetailTodoProps) => {
         ))}
       </View>
       <Space height={uiDimen.large} />
-      <TouchableOpacity style={styles.button} onPress={() => {}}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate('UpdateTodo', {detail, todoId: id});
+        }}>
         <Text style={styles.labelButton}>Ubah</Text>
       </TouchableOpacity>
     </View>
