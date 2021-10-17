@@ -1,6 +1,8 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
+import {formatDate} from '@functions';
+
 import {uiDimen} from '@constants';
 import {Space, ModalTodo} from '@components';
 
@@ -50,7 +52,9 @@ export const ListTodo = ({
                   <Text style={{fontWeight: 'bold', color: 'black'}}>
                     {item.name}
                   </Text>
-                  <Text style={{fontWeight: '500'}}>{item.created_at}</Text>
+                  <Text style={{fontWeight: '500'}}>
+                    {formatDate(item.created_at)}
+                  </Text>
                 </View>
                 <Text
                   style={[

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   SafeAreaView,
   View,
@@ -52,7 +52,12 @@ export const CreateTodoScreen = () => {
         },
       };
 
-      await dispatch(createTodoThunk(arg));
+      const res = await dispatch(createTodoThunk(arg));
+
+      if (res.meta.requestStatus === 'fulfilled') {
+        setName('');
+        setDescription('');
+      }
     } catch (error) {
       console.log({error});
     }

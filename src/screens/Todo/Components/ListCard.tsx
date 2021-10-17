@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
+import {formatDate} from '@functions';
 import {Space, ModalTodo} from '@components';
 import {uiDimen} from '@constants';
 
@@ -37,7 +38,7 @@ export const ListCard = ({
       <View style={styles.card}>
         <View>
           <Text style={{fontWeight: 'bold'}}>{todo.name}</Text>
-          <Text style={{fontWeight: '500'}}>{todo.created_at}</Text>
+          <Text style={{fontWeight: '500'}}>{formatDate(todo.created_at)}</Text>
         </View>
         <Text
           style={[

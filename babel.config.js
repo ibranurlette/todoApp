@@ -13,6 +13,7 @@ module.exports = {
           '@navigation': './src/Navigation',
           '@constants': './src/Constants',
           '@API': './src/API',
+          '@functions': './src/Functions',
         },
       },
     ],

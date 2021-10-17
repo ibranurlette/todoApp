@@ -46,7 +46,8 @@
       "@redux": ["src/Redux"],
       "@navigation": ["src/Navigation"],
       "@constants": ["src/Constants"],
-      "@API": ["src/API"]
+      "@API": ["src/API"],
+      "@functions": ["src/Functions"]
     },
     /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
