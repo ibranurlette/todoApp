@@ -21,6 +21,7 @@ import {
   createTodoThunk,
   fetchTodoThunk,
   removeTodoThunk,
+  updateStatusTodoThunk,
 } from '@redux';
 import {ListTodo} from './Components';
 
@@ -39,6 +40,7 @@ export const CreateTodoScreen = () => {
   const [description, setDescription] = useState<string>('');
   const [modalVisible, setModalVisible] = useState(false);
   const [todoId, setTodoId] = useState<string>('');
+  const [actionStatus, setActionStatus] = useState<string>('');
 
   const createTodo = async () => {
     try {
@@ -81,10 +83,20 @@ export const CreateTodoScreen = () => {
     fetchTodo();
   }, [todo]);
 
-  const doneTodo = (index: number) => {
-    const newTodos = [...todos];
-    newTodos[index].isDone = true;
-    setTodos(newTodos);
+  const doneTodo = async (id: string) => {
+    try {
+      const res = await dispatch(updateStatusTodoThunk(id));
+      if (res.meta.requestStatus === 'fulfilled') {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.log({error});
+    }
+
+    // ! doneTodo data just with react hooks
+    // const newTodos = [...todos];
+    // newTodos[index].isDone = true;
+    // setTodos(newTodos);
   };
 
   const removeTodo = async (id: string) => {
@@ -152,12 +164,14 @@ export const CreateTodoScreen = () => {
 
           <ListTodo
             todos={todos}
-            doneTodo={doneTodo}
             setTodoId={setTodoId}
             todoId={todoId}
             setModalVisible={setModalVisible}
             modalVisible={modalVisible}
             removeTodo={removeTodo}
+            doneTodo={doneTodo}
+            setActionStatus={setActionStatus}
+            actionStatus={actionStatus}
             navigate={navigation.navigate}
           />
         </View>

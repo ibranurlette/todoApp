@@ -7,13 +7,15 @@ import {ModalTodo} from './Modal';
 
 export type ListTodoProps = {
   todos: any[];
-  doneTodo: (index: number) => void;
+  doneTodo: (id: string) => void;
   removeTodo: (id: string) => void;
   navigate: any;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   modalVisible: boolean;
   setTodoId: React.Dispatch<React.SetStateAction<string>>;
   todoId: string;
+  setActionStatus: React.Dispatch<React.SetStateAction<string>>;
+  actionStatus: string;
 };
 
 export const ListTodo = ({
@@ -25,6 +27,8 @@ export const ListTodo = ({
   navigate,
   setModalVisible,
   modalVisible,
+  setActionStatus,
+  actionStatus,
 }: ListTodoProps) => {
   return (
     <View>
@@ -68,25 +72,35 @@ export const ListTodo = ({
                   onPress={() => {
                     setModalVisible(!modalVisible);
                     setTodoId(item.id);
+                    setActionStatus('delete');
                   }}>
                   <Text style={[styles.actionButton, {backgroundColor: 'red'}]}>
                     Delete
                   </Text>
                 </TouchableOpacity>
                 <Space width={uiDimen.medium} />
-                <TouchableOpacity
-                  onPress={() => {
-                    doneTodo(index);
-                  }}>
-                  <Text
-                    style={[styles.actionButton, {backgroundColor: '#39A388'}]}>
-                    Done
-                  </Text>
-                </TouchableOpacity>
+                {!item.is_done && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setModalVisible(!modalVisible);
+                      setTodoId(item.id);
+                      setActionStatus('done');
+                    }}>
+                    <Text
+                      style={[
+                        styles.actionButton,
+                        {backgroundColor: '#39A388'},
+                      ]}>
+                      Done
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
             <Space height={uiDimen.medium} />
             <ModalTodo
+              actionStatus={actionStatus}
+              doneTodo={doneTodo}
               removeTodo={removeTodo}
               todoId={todoId}
               setModalVisible={setModalVisible}

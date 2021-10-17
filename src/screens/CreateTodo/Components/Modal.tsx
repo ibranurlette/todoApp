@@ -7,13 +7,17 @@ export type ModalTodoProps = {
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   modalVisible: boolean;
   removeTodo: (id: string) => void;
+  doneTodo: (id: string) => void;
   todoId: string;
+  actionStatus: string;
 };
 export const ModalTodo = ({
   setModalVisible,
   modalVisible,
   removeTodo,
+  doneTodo,
   todoId,
+  actionStatus,
 }: ModalTodoProps) => {
   return (
     <View style={styles.centeredView}>
@@ -26,12 +30,18 @@ export const ModalTodo = ({
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={{fontSize: 15, fontWeight: 'bold'}}>Hapus Todo</Text>
+            <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+              {actionStatus === 'delete' ? 'Hapus Todo' : 'Ubah Status'}
+            </Text>
             <View style={{padding: 20}}>
               <Text style={styles.modalText}>Apakah Kamu Yakin ?</Text>
               <TouchableOpacity
                 style={[styles.button, styles.buttonRemove]}
-                onPress={() => removeTodo(todoId)}>
+                onPress={() => {
+                  actionStatus === 'delete'
+                    ? removeTodo(todoId)
+                    : doneTodo(todoId);
+                }}>
                 <Text style={styles.textStyle}>Yakin</Text>
               </TouchableOpacity>
               <Space height={uiDimen.medium} />

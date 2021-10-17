@@ -40,3 +40,11 @@ export async function removeTodoAPI(id: any) {
     throw err.response.data;
   }
 }
+export async function updateStatusTodoAPI(id: any) {
+  try {
+    const response = await API.patch(`/todo/${id}`);
+    return response;
+  } catch (err) {
+    throw err.response.data;
+  }
+}
